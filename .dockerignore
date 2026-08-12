@@ -1,0 +1,11 @@
+.git
+eda
+data
+runs
+logs
+brats-env
+splits
+*.sif
+*.nii.gz
+**/__pycache__
+**/*.pyc

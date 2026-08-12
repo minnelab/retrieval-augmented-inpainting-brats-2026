@@ -1,0 +1,30 @@
+__pycache__/
+*.pyc
+
+# training outputs
+runs/
+logs/
+preds/
+priors/
+submissions/
+
+# weights — published as GitHub release assets, never committed.
+# checkpoints/download.sh fetches them into checkpoints/.
+*.ckpt
+*.pt
+*.safetensors
+
+# data and derived artifacts
+*.nii
+*.nii.gz
+*.npy
+*.npz
+*.pkl
+data/atlas/            # BraTS-SRI24 atlas — auto-downloaded by data/preprocess_hcp.py
+
+# environments and containers
+brats-env/
+venv*/
+*.sif
+*.tar.gz
+*.zip
