@@ -8,7 +8,7 @@ Run all build commands from the repo root (the Dockerfiles expect it as the buil
 
 ## 1. Unconditioned — `Dockerfile`
 
-The challenge submission (`wdm_hcp2`, val-150 SSIM 0.87167 with TTA). Self-contained: no
+The earlier unconditioned model (`wdm_hcp2`). Self-contained: no
 retrieval, no donor library, so the image is just the model plus `src/diffusion/`.
 
     cp checkpoints/wdm_hcp2_best.ckpt deploy/model.ckpt
@@ -16,7 +16,7 @@ retrieval, no donor library, so the image is just the model plus `src/diffusion/
 
 ## 2. Merged retrieval prior — `Dockerfile.merged`
 
-The best model (`merged_reg2_ep59`, 0.87861). The container gets **no network access**, so the
+The submitted model (`merged_reg2_ep59`). The container gets **no network access**, so the
 entire donor library — the ~1909 T1 volumes the retrieval searches over — has to be baked in.
 `build_merged.sh` does that: it stages the checkpoint, copies each indexed donor's T1 into
 `deploy/donors/`, rewrites the index paths to their in-container locations, then builds.
