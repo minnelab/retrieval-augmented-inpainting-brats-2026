@@ -1,0 +1,39 @@
+# BraTS 2026 Task 4 (inpainting) submission image — MERGED-PRIOR wavelet-diffusion.
+# Standing best on our val-150: SSIM 0.87615 (merged top-K retrieval prior, concat) > no-prior 0.87548.
+#
+# Task-4 compute constraints honored:
+#   - Max CUDA 12.5  -> base is cuda12.4 (NOT the 12.6 the no-prior Dockerfile used, which would violate it).
+#   - monai PINNED to 1.5.2 -> the HaarDWT3D wavelet changed in 1.6.0 and silently degrades our checkpoint
+#     (verified: same ckpt scores 0.84 under 1.6.0 vs 0.87 under 1.5.2). DO NOT bump.
+#   - Zero network at runtime -> the donor library + index are BAKED IN (no retrieval downloads).
+#   - Measured footprint (3 cases, RTX-class GPU): /dev/shm peak 1 MB (thread-pool I/O, no DataLoader
+#     workers -> ~0 shm), RAM ~3.1 GB, ~40 s/case. Well under --shm-size=16G / --memory=48G / 1h-per-sample.
+FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    INPUT_DIR=/input \
+    OUTPUT_DIR=/output \
+    CKPT=/app/model.ckpt \
+    INDEX=/app/index.npz \
+    K=10 SHORTLIST=15 LOAD_THREADS=8 \
+    ADAPTIVE=1 N_AVG_MIN=8 N_AVG_MAX=16 BATCH_CAP=32
+
+WORKDIR /app
+
+COPY deploy/requirements.merged.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Inference core + merged entrypoint (retrieval + merge + prior-conditioned diffusion).
+COPY src/diffusion/ /app/src/
+COPY deploy/predict_merged.py /app/predict_merged.py
+
+# Model weights (merged ep21) + retrieval index (paths already remapped to /app/donors by build_merged.sh).
+COPY deploy/model.ckpt /app/model.ckpt
+COPY deploy/index.npz /app/index.npz
+
+# Donor library (~1909 t1n volumes, ~10 GB) — REQUIRED because retrieval has no network at runtime.
+# Assembled + placed by deploy/build_merged.sh so index paths resolve to /app/donors/<name>/<name>-t1n.nii.gz.
+COPY deploy/donors/ /app/donors/
+
+ENTRYPOINT ["python", "/app/predict_merged.py"]

@@ -1,0 +1,8 @@
+# On top of the torch/CUDA provided by the base image (do NOT reinstall torch here).
+# monai is PINNED to 1.5.2: the HaarDWT3D wavelet transform changed in 1.6.0 and silently degrades
+# this checkpoint (same ckpt: 0.84 under 1.6.0 vs 0.87 under 1.5.2). Never widen this constraint.
+monai==1.5.2
+pytorch-lightning>=2.2,<3
+nibabel>=5.1
+scipy>=1.10
+einops>=0.7           # MONAI DiffusionModelUNet attention needs it at runtime

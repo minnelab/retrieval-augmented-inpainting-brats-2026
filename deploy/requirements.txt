@@ -1,0 +1,6 @@
+# On top of the torch/CUDA provided by the base image (do NOT reinstall torch here).
+monai>=1.3,<2
+pytorch-lightning>=2.2,<3
+nibabel>=5.1
+scipy>=1.10
+einops>=0.7           # MONAI DiffusionModelUNet attention needs it at runtime
