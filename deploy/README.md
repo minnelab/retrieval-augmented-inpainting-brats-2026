@@ -26,7 +26,7 @@ Paths default to `/input`, `/output`, `/app/model.ckpt` and are overridable via 
 `INPUT_DIR` / `OUTPUT_DIR` / `CKPT` env vars (and `ROI`, default `128,128,128`), or as
 positional args `python predict.py [INPUT_DIR] [OUTPUT_DIR] [CKPT]`.
 
-> ⚠️ Confirm the mount points the current Synapse Task 4 runner uses. `/input` + `/output`
+> Confirm the mount points the current Synapse Task 4 runner uses. `/input` + `/output`
 > is the recent BraTS convention (used here as the default); some older years used
 > `/app/data` + `/data/results`. If Task 4 differs, set `INPUT_DIR`/`OUTPUT_DIR` in the
 > `Dockerfile` to match — no code change needed.
